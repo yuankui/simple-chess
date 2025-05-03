@@ -10,10 +10,12 @@
     "lint": "bun run eslint .",
     "preview": "bun run vite preview",
     "server": "bun run server.ts",
-    "start": "bun run server.ts"
+    "start": "bun run server.ts",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,css,html}\" \"server.ts\""
   },
   "dependencies": {
     "express": "^5.1.0",
+    "prettier": "3.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "socket.io": "^4.8.1",
