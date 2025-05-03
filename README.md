@@ -1,11 +1,54 @@
-# React + TypeScript + Vite
+# React + TypeScript + Vite + Socket.IO
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This template provides a minimal setup to get React working in Vite with HMR, Socket.IO integration, and some ESLint rules.
 
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Socket.IO Integration with Bun
+
+This project includes a Socket.IO server and client integration, managed with Bun:
+
+1. The Socket.IO server is defined in `server.ts` (TypeScript)
+2. The React client connects to the server in `App.tsx`
+
+### Requirements
+
+- [Bun](https://bun.sh/) - A fast JavaScript runtime, bundler, and package manager
+
+### Running the application
+
+To run the application with Socket.IO:
+
+1. Install Bun if you haven't already:
+   ```bash
+   curl -fsSL https://bun.sh/install | bash
+   ```
+
+2. Install dependencies:
+   ```bash
+   bun install
+   ```
+
+3. Start the Socket.IO server:
+   ```bash
+   bun run server
+   ```
+
+4. In a separate terminal, start the React development server:
+   ```bash
+   bun run dev
+   ```
+
+5. Open your browser to the URL shown in the Vite output (typically http://localhost:5173)
+
+### Features
+
+- Real-time messaging between clients
+- Connection status indicator
+- Simple chat interface with message history
 
 ## Expanding the ESLint configuration
 
