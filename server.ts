@@ -4,6 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'node:crypto';
 import { GameManagementData, GameStateMessageData } from './src/hooks/useSocket.js';
 import { MessageTypes } from './src/messages/message-types.js';
+import { createPawnPiece } from './src/chess/PawnPiece.js';
 
 const app = express();
 
@@ -47,7 +48,7 @@ io.on('connection', (socket: Socket) => {
           id: gameId,
           players: {
             white: socket.id, // The creator is the first player
-            black: '', // No second player yet
+            black: undefined, // No second player yet
           },
           status: 'waiting', // waiting for another player
           gameState: {
@@ -76,9 +77,10 @@ io.on('connection', (socket: Socket) => {
       case 'join': {
         // find a game with only one player
         const game = Array.from(activeGames.values()).find(
-          g => g.id === data.gameId && (g.players.black == null || g.players.white == null)
+          g => g.players.black == null || g.players.white == null
         );
 
+        console.log('activeGames', activeGames);
         if (!game) {
           socket.emit('error', {
             message: `Game with ID ${data.gameId} not found or already full`,
@@ -93,14 +95,22 @@ io.on('connection', (socket: Socket) => {
         // Join the socket room for this game
         socket.join(game.id);
 
-        // Notify all players in the room that game is starting
-        io.to(game.id).emit(MessageTypes.gameStarted, {
-          type: 'gameState',
-          gameId: data.gameId,
-          message: 'Both players have joined. Game is starting!',
-        });
+        // initialize game state
+        game.gameState = {
+          gameOver: false,
+          board: [
+            createPawnPiece('black', { x: 0, y: 6 }),
+            createPawnPiece('black', { x: 1, y: 6 }),
+          ],
+          winner: null,
+        };
 
-        console.log(`Player joined game: ${data.gameId}`);
+        // Notify all players in the room that game is starting
+        io.to(game.id).emit(MessageTypes.gameStarted, game);
+
+        io.to(game.id).emit(MessageTypes.gameState, game.gameState);
+
+        console.log(`Player joined game: ${game.id}`);
         break;
       }
       default:

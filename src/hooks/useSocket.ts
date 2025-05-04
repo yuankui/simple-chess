@@ -88,15 +88,13 @@ export function useSocket() {
     }
   }, []);
 
-  const joinGame = useCallback((gameId: string) => {
+  const joinGame = useCallback(() => {
     if (socketRef.current) {
       const data: GameManagementData = {
         type: 'gameManagement',
         action: 'join',
-        gameId,
       };
       socketRef.current.emit('gameManagement', data);
-      setCurrentGameId(gameId);
     }
   }, []);
 
