@@ -9,8 +9,8 @@
     "build:server": "tsc -p tsconfig.server.json",
     "lint": "bun run eslint .",
     "preview": "bun run vite preview",
-    "server": "bun run server.ts",
-    "start": "bun run server.ts",
+    "server": "bun run src/server/server.ts",
+    "start": "bun run src/server/server.ts",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,css,html}\" \"server.ts\""
   },
   "dependencies": {

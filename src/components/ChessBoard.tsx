@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ChessPiece, Position } from '../chess/ChessPiece';
-import { GameStateMessageData } from '../hooks/useSocket';
+import { GameStateMessageData } from '../messages/message-types.ts';
 
 interface ChessBoardProps {
   gameState?: GameStateMessageData;
@@ -48,6 +48,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
 
   // Function to render a chess piece
   const renderPiece = (piece: ChessPiece) => {
+    console.log({ piece });
     const isSelected = selectedPiece === piece;
     return (
       <div
@@ -102,9 +103,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
           </div>
         ) : (
           <div className="turn-indicator">
-            {gameState?.lastMove
-              ? `${gameState.lastMove === 'white' ? 'Black' : 'White'}'s turn`
-              : 'Waiting to start'}
+            {gameState?.status === 'playing' ? `${gameState.nextMove}'s turn` : 'Waiting to start'}
           </div>
         )}
       </div>

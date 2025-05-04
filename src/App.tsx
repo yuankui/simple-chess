@@ -4,31 +4,30 @@ import { useSocket } from './hooks/useSocket';
 import ChessBoard from './components/ChessBoard';
 import GameControls from './components/GameControls';
 import { ChessPiece, Position } from './chess/ChessPiece';
+import { GameStateMessageData } from './messages/message-types.ts';
 
 function App() {
-  const { connected, updateGameState, gameStates, joinGame, currentGameId, createNewGame, error } =
-    useSocket();
+  const { connected, updateGameState, gameStates, joinGame, createNewGame, error } = useSocket();
 
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
 
-  const latestGame = useMemo(() => gameStates[gameStates.length - 1], [gameStates]);
+  const latestGame = useMemo<GameStateMessageData>(
+    () => gameStates[gameStates.length - 1],
+    [gameStates]
+  );
 
   // Update current game when game states change
   useEffect(() => {
-    if (gameStates.length > 0 && currentGameId) {
-      // Get the latest game state for current game
-
-      if (latestGame) {
-        // Determine player color based on socket ID
-        // This is a simplified approach - in a real app you would manage this better
-        if (latestGame.players.white === 'socket.id') {
-          setPlayerColor('white');
-        } else if (latestGame.players.black === 'socket.id') {
-          setPlayerColor('black');
-        }
+    if (latestGame) {
+      // Determine player color based on socket ID
+      // This is a simplified approach - in a real app you would manage this better
+      if (latestGame.players.white === 'socket.id') {
+        setPlayerColor('white');
+      } else if (latestGame.players.black === 'socket.id') {
+        setPlayerColor('black');
       }
     }
-  }, [gameStates, currentGameId, latestGame]);
+  }, [gameStates, latestGame]);
 
   // Handle piece movement
   const handleMove = (from: Position, to: Position) => {
@@ -60,7 +59,7 @@ function App() {
 
       <main className="app-main">
         <GameControls
-          currentGameId={currentGameId}
+          currentGame={latestGame}
           connected={connected}
           onCreateGame={createNewGame}
           onJoinGame={joinGame}

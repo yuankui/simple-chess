@@ -11,5 +11,7 @@
     "skipLibCheck": true,
     "outDir": "dist-server"
   },
-  "include": ["server.ts"]
+  "include": [
+    "src/server/server.ts"
+  ]
 }

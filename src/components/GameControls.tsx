@@ -1,12 +1,14 @@
+import { GameStateMessageData } from '../messages/message-types.ts';
+
 interface GameControlsProps {
-  currentGameId: string | null;
+  currentGame: GameStateMessageData;
   connected: boolean;
   onCreateGame: () => void;
   onJoinGame: () => void;
 }
 
 export default function GameControls({
-  currentGameId,
+  currentGame,
   connected,
   onCreateGame,
   onJoinGame,
@@ -15,13 +17,13 @@ export default function GameControls({
     onJoinGame();
   };
 
-  if (currentGameId) {
+  if (currentGame) {
     return (
       <div className="game-controls">
         <div className="current-game">
           <h3>Current Game</h3>
           <p>
-            Game ID: <span className="game-id">{currentGameId}</span>
+            Game ID: <span className="game-id">{currentGame.id}</span>
           </p>
           <p>Share this ID with your opponent</p>
         </div>
@@ -41,7 +43,7 @@ export default function GameControls({
         </button>
 
         <div className="join-game">
-          <button onClick={handleJoinGame} disabled={!connected || !!currentGameId}>
+          <button onClick={handleJoinGame} disabled={!connected || !!currentGame}>
             Join Game
           </button>
         </div>
