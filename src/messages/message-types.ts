@@ -12,12 +12,9 @@ export interface GameStateMessageData {
   };
 }
 
-export interface GameManagementData {
-  action: 'join' | 'create-new';
-}
-
 export type MessageTypes = {
-  gameManagement: GameManagementData;
+  gameCreate: undefined;
+  gameJoin: { id: string };
   gameState: GameStateMessageData;
   gameStarted: GameStateMessageData;
   connection: Socket;

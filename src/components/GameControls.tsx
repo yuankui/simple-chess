@@ -1,10 +1,11 @@
 import { GameStateMessageData } from '../messages/message-types.ts';
+import { useState } from 'react';
 
 interface GameControlsProps {
   currentGame: GameStateMessageData;
   connected: boolean;
   onCreateGame: () => void;
-  onJoinGame: () => void;
+  onJoinGame: (gameId: string) => void;
 }
 
 export default function GameControls({
@@ -13,8 +14,9 @@ export default function GameControls({
   onCreateGame,
   onJoinGame,
 }: GameControlsProps) {
+  const [gameId, setGameId] = useState<string>('');
   const handleJoinGame = () => {
-    onJoinGame();
+    onJoinGame(gameId);
   };
 
   if (currentGame) {
@@ -43,6 +45,7 @@ export default function GameControls({
         </button>
 
         <div className="join-game">
+          <input value={gameId} onChange={e => setGameId(e.target.value)} />
           <button onClick={handleJoinGame} disabled={!connected || !!currentGame}>
             Join Game
           </button>

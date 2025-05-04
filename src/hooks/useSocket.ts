@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import {
   createReceiveMessage,
-  GameManagementData,
+  createSendMesssage,
   GameStateMessageData,
 } from '../messages/message-types.ts';
 
@@ -60,19 +60,13 @@ export function useSocket() {
 
   const createNewGame = useCallback(() => {
     if (socketRef.current) {
-      const data: GameManagementData = {
-        action: 'create-new',
-      };
-      socketRef.current.emit('gameManagement', data);
+      socketRef.current.emit(...createSendMesssage('gameCreate', undefined));
     }
   }, []);
 
-  const joinGame = useCallback(() => {
+  const joinGame = useCallback((gameId: string) => {
     if (socketRef.current) {
-      const data: GameManagementData = {
-        action: 'join',
-      };
-      socketRef.current.emit('gameManagement', data);
+      socketRef.current.emit(...createSendMesssage('gameJoin', { id: gameId })); // Replace with actual game ID
     }
   }, []);
 

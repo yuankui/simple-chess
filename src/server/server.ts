@@ -5,7 +5,6 @@ import { randomUUID } from 'node:crypto';
 import {
   createReceiveMessage,
   createSendMesssage,
-  GameManagementData,
   GameStateMessageData,
 } from '../messages/message-types.ts';
 import { createPawnPiece } from '../chess/PawnPiece.ts';
@@ -34,72 +33,60 @@ io.on('connection', (socket: Socket) => {
   console.log('a user connected');
 
   socket.on(
-    ...createReceiveMessage('gameManagement', (data: GameManagementData) => {
-      console.log('Game management action received:', data);
+    ...createReceiveMessage('gameCreate', () => {
+      console.log('Game management action received: gameCreate');
+      // Generate a unique game ID
+      const gameId = generateUniqueId();
 
-      switch (data.action) {
-        case 'create-new': {
-          // Generate a unique game ID
-          const gameId = generateUniqueId();
+      // Create a new game room
+      socket.join(gameId);
 
-          // Create a new game room
-          socket.join(gameId);
+      // Store game state (in a real app, you might use a database)
+      const newGame = initializeGame(gameId, socket.id);
 
-          // Store game state (in a real app, you might use a database)
-          const newGame = initializeGame(gameId, socket.id);
+      // Add game to active games (in a real app, use a database)
+      activeGames.set(gameId, newGame);
 
-          // Add game to active games (in a real app, use a database)
-          activeGames.set(gameId, newGame);
+      // Inform the client that game was created
 
-          // Inform the client that game was created
+      socket.emit(...createSendMesssage('gameStarted', newGame));
+      console.log(`New game created with ID: ${gameId}`);
+    })
+  );
+  socket.on(
+    ...createReceiveMessage('gameJoin', data => {
+      console.log('Game management action received: gameJoin', data);
+      // find a game with only one player
+      const game = activeGames.get(data.id);
 
-          socket.emit(...createSendMesssage('gameStarted', newGame));
-          console.log(`New game created with ID: ${gameId}`);
-          break;
-        }
-
-        case 'join': {
-          // find a game with only one player
-          const game = Array.from(activeGames.values()).find(
-            g => Object.values(g.players).filter(p => p != null).length == 1
-          );
-
-          if (!game) {
-            socket.emit(...createSendMesssage('error', { message: 'No available games to join' }));
-            return;
-          }
-
-          // Add player to the game
-          if (game.players.white == null || game.players.black == null) {
-            game.players = {
-              black: game.players.black ?? socket.id,
-              white: game.players.white ?? socket.id,
-            };
-          }
-          game.status = 'playing';
-
-          // Join the socket room for this game
-          socket.join(game.id);
-
-          // initialize game state
-          game.gameState = {
-            gameOver: false,
-            board: [
-              createPawnPiece('black', { x: 0, y: 6 }),
-              createPawnPiece('black', { x: 1, y: 6 }),
-            ],
-            winner: null,
-          };
-
-          // Notify all players in the room that game is starting
-          io.to(game.id).emit(...createSendMesssage('gameStarted', game));
-
-          console.log(`Player joined game: ${game.id}, game started`);
-          break;
-        }
-        default:
-          socket.emit('error', { message: `Unknown action: ${data.action}` });
+      if (!game) {
+        socket.emit(...createSendMesssage('error', { message: 'No available games to join' }));
+        return;
       }
+
+      // Add player to the game
+      if (game.players.white == null || game.players.black == null) {
+        game.players = {
+          black: game.players.black ?? socket.id,
+          white: game.players.white ?? socket.id,
+        };
+      }
+      game.status = 'playing';
+
+      // Join the socket room for this game
+      socket.join(game.id);
+
+      // initialize game state
+      game.gameState = {
+        gameOver: false,
+        board: [createPawnPiece('black', { x: 0, y: 6 }), createPawnPiece('black', { x: 1, y: 6 })],
+        winner: null,
+      };
+
+      // Notify all players in the room that game is starting
+      io.to(game.id).emit(...createSendMesssage('gameStarted', game));
+
+      console.log(`Player joined game: ${game.id}, game started`);
     })
   );
   // Listen for game management messages from the client
