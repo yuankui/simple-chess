@@ -102,9 +102,5 @@ simple-chess/
 
 - This demo is not finished yet. I have some issue displaying the chess pieces on the board. I will fix it later.
 
-## TODO
-
-- Fix the chess pieces display issue
-- Add more pieces
-- Add piece movement animation
-- Improve the code organization
+## Limitations
+- The rule is not correct for now.

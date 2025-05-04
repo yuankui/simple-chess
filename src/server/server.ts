@@ -100,6 +100,12 @@ io.on('connection', (socket: Socket) => {
 
       // Broadcast the game state to all players in the room
       if (activeGame) {
+        // check if the game is over
+        const isOver = game.gameState.board.filter(p => p.type === 'king').length == 1;
+        if (isOver) {
+          game.gameState.gameOver = true;
+          game.gameState.winner = game.nextMove === 'white' ? 'black' : 'white';
+        }
         io.to(game.id).emit(
           ...createSendMesssage('gameState', {
             ...game,
