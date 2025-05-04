@@ -1,30 +1,48 @@
-# React + TypeScript + Vite + Socket.IO
+# Simple Chess - Multiplayer Chess with React and Socket.IO
 
-This template provides a minimal setup to get React working in Vite with HMR, Socket.IO integration, and some ESLint rules.
+A real-time multiplayer chess game built with React, TypeScript, Vite, and Socket.IO, using Bun as the JavaScript runtime.
 
-Currently, two official plugins are available:
+![Simple Chess Screenshot](https://example.com/screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Socket.IO Integration with Bun
+- Real-time multiplayer chess using Socket.IO
+- Create or join games with a unique ID
+- Visual chess board with move highlighting
+- Turn-based gameplay with state synchronization
+- Clean, responsive UI that works on desktop and mobile
 
-This project includes a Socket.IO server and client integration, managed with Bun:
+## Tech Stack
 
-1. The Socket.IO server is defined in `server.ts` (TypeScript)
-2. The React client connects to the server in `App.tsx`
+### Frontend
+- React 19
+- TypeScript
+- Vite
+- Socket.IO Client
 
-### Requirements
+### Backend
+- Bun runtime
+- Express.js
+- Socket.IO Server
+- TypeScript
 
-- [Bun](https://bun.sh/) - A fast JavaScript runtime, bundler, and package manager
+## Setup and Installation
 
-### Running the application
+### Prerequisites
 
-To run the application with Socket.IO:
+- [Bun](https://bun.sh/) - Fast JavaScript runtime, bundler, and package manager
 
-1. Install Bun if you haven't already:
+Install Bun (if not already installed):
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+### Installation
+
+1. Clone the repository:
    ```bash
-   curl -fsSL https://bun.sh/install | bash
+   git clone https://github.com/yourusername/simple-chess.git
+   cd simple-chess
    ```
 
 2. Install dependencies:
@@ -32,66 +50,61 @@ To run the application with Socket.IO:
    bun install
    ```
 
-3. Start the Socket.IO server:
-   ```bash
-   bun run server
-   ```
+## Running the Application
 
-4. In a separate terminal, start the React development server:
-   ```bash
-   bun run dev
-   ```
+The application consists of two parts that need to be run simultaneously:
 
-5. Open your browser to the URL shown in the Vite output (typically http://localhost:5173)
+### 1. Start the Backend Server
 
-### Features
-
-- Real-time messaging between clients
-- Connection status indicator
-- Simple chat interface with message history
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+bun run server
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This will start the Socket.IO server on http://localhost:3000
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Start the Frontend Development Server
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+In a separate terminal:
+
+```bash
+bun run dev
 ```
+
+This will start the Vite development server. Open your browser to the URL shown in the terminal output (typically http://localhost:5173).
+
+## How to Play
+
+1. First player clicks "Create New Game" to create a new game session
+2. The game will generate a unique game ID that can be shared with another player
+3. Second player clicks "Join Game" to join the existing game
+4. When both players have joined, the game starts automatically
+5. White moves first, then players alternate turns
+6. Click on a piece to select it, then click on a highlighted square to move
+
+## Project Structure
+
+```
+simple-chess/
+├── public/              # Static assets
+│   └── pieces/          # Chess piece SVGs
+├── src/                 # Frontend source code
+│   ├── components/      # React components
+│   ├── hooks/           # Custom React hooks
+│   ├── chess/           # Chess game logic
+│   └── messages/        # Message type definitions
+├── server.ts            # Socket.IO backend server
+├── tsconfig.json        # TypeScript configuration
+└── tsconfig.server.json # Server TypeScript configuration
+```
+
+
+## NOTE
+
+- This demo is not finished yet. I have some issue displaying the chess pieces on the board. I will fix it later.
+
+## TODO
+
+- Fix the chess pieces display issue
+- Add more pieces
+- Add piece movement animation
+- Improve the code organization
