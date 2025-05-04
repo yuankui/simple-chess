@@ -65,27 +65,47 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
   const renderBoard = () => {
     const board = [];
     const gameStateBoard = gameState?.gameState?.board || [];
+    
+    // Determine if we should flip the board (when player is black)
+    const isFlipped = playerColor === 'black';
 
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
-        const isBlackSquare = (x + y) % 2 === 1;
-        const isPossibleMove = possibleMoves.some(move => move.x === x && move.y === y);
+        // Calculate actual coordinates based on board orientation
+        const actualY = isFlipped ? 7 - y : y;
+        const actualX = isFlipped ? 7 - x : x;
+        
+        const isBlackSquare = (actualX + actualY) % 2 === 1;
+        const isPossibleMove = possibleMoves.some(move => 
+          (isFlipped ? 7 - move.x : move.x) === actualX && 
+          (isFlipped ? 7 - move.y : move.y) === actualY
+        );
 
-        // Find if there's a piece at this position
-        const piece = gameStateBoard.find(p => p.position.x === x && p.position.y === y);
+        // Find if there's a piece at this position (using actual board coordinates)
+        const piece = gameStateBoard.find(p => 
+          (isFlipped ? 7 - p.position.x : p.position.x) === actualX && 
+          (isFlipped ? 7 - p.position.y : p.position.y) === actualY
+        );
+
+        // For coordinate display, use logical board coordinates
+        const displayX = isFlipped ? 7 - actualX : actualX;
+        const displayY = isFlipped ? 7 - actualY : actualY;
 
         board.push(
           <div
-            key={`${x}-${y}`}
+            key={`${actualX}-${actualY}`}
             className={`
               chess-square 
               ${isBlackSquare ? 'black' : 'white'} 
               ${isPossibleMove ? 'possible-move' : ''}
             `}
-            onClick={() => handleCellClick(x, y)}
+            onClick={() => handleCellClick(
+              isFlipped ? 7 - actualX : actualX,
+              isFlipped ? 7 - actualY : actualY
+            )}
           >
             {piece && renderPiece(piece)}
-            <div className="coordinates">{`${String.fromCharCode(97 + x)}${8 - y}`}</div>
+            <div className="coordinates">{`${String.fromCharCode(97 + displayX)}${8 - displayY}`}</div>
           </div>
         );
       }
@@ -106,8 +126,14 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
   };
   return (
     <div className="chess-board-container">
-      <div className="chess-board">{renderBoard()}</div>
+      <div className={`chess-board ${playerColor === 'black' ? 'rotated' : ''}`}>
+        {renderBoard()}
+      </div>
       <div className="board-status">
+        <div className="player-color-indicator">
+          Playing as: <span className={`color-${playerColor}`}>{playerColor}</span>
+          {playerColor === 'black' && <span className="rotated-indicator"> (board rotated)</span>}
+        </div>
         {gameState?.gameState?.gameOver ? (
           <div className="game-over">
             Game Over!{' '}

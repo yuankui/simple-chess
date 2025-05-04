@@ -203,6 +203,9 @@
   border-radius: 4px;
   text-align: center;
   font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .game-over {
@@ -211,6 +214,47 @@
 
 .turn-indicator {
   color: #333;
+}
+
+.player-color-indicator {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.color-white {
+  color: #333;
+  background-color: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.color-black {
+  color: #fff;
+  background-color: #333;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.rotated-indicator {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Add a CSS transition for smooth rotation */
+.chess-board {
+  transition: transform 0.5s ease-in-out;
+}
+
+.chess-board.rotated {
+  transform: rotate(180deg);
+}
+
+/* We need to counter-rotate the pieces and coordinates */
+.rotated .chess-piece,
+.rotated .coordinates {
+  transform: rotate(180deg);
 }
 
 @media (max-width: 768px) {
