@@ -175,6 +175,10 @@
   cursor: pointer;
   user-select: none;
   z-index: 2;
+  animation: linear 0.2s;
+  transition:
+    left 0.2s linear,
+    top 0.2s linear;
 }
 
 .chess-piece.white {
