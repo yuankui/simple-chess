@@ -48,19 +48,23 @@ function App() {
       .map(p => {
         // exists
         if (p.position.x === to.x && p.position.y === to.y) {
+          // kills
           return null;
         }
         // move
         if (p.position.x === from.x && p.position.y === from.y) {
+          // move
           return {
             ...p,
             position: to,
           };
         }
+        // no move
         return p;
       })
       .filter(p => p != null);
 
+    console.log({ existingPieces, newPieces });
     // Update the game state
     const newGameState: GameStateMessageData = {
       ...latestGame,

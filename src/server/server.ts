@@ -93,27 +93,23 @@ io.on('connection', (socket: Socket) => {
 
   // Listen for game state updates
   socket.on(
-    ...createReceiveMessage('gameState', (data: GameStateMessageData) => {
-      // Validate the data has a gameId
-      if (!data.id) {
-        socket.emit('error', { message: 'Game ID is required to update game state' });
-        return;
-      }
+    ...createReceiveMessage('gameState', (game: GameStateMessageData) => {
+      // Validate the game has a gameId
 
-      const activeGame = activeGames.get(data.id);
+      const activeGame = activeGames.get(game.id);
 
       // Broadcast the game state to all players in the room
       if (activeGame) {
-        io.to(data.id).emit(
+        io.to(game.id).emit(
           ...createSendMesssage('gameState', {
-            ...data,
+            ...game,
           })
         );
       } else {
-        socket.emit('error', { message: `Game with ID ${data.id} not found` });
+        socket.emit('error', { message: `Game with ID ${game.id} not found` });
       }
 
-      console.log(`Game state updated for game: ${data.id}`);
+      console.log(`Game state updated for game: ${game.id}`);
     })
   );
 

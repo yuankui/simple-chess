@@ -19,6 +19,6 @@ export interface ChessPieceData {
   id: string; // Unique identifier for the piece
   color: 'white' | 'black';
   position: Position;
-  type: 'pawn'; // TODO: add other types like 'rook', 'knight', etc.
+  type: 'pawn' | 'knight' | 'rook' | 'bishop' | 'queen' | 'king';
   image: string; // Image URL for the piece
 }

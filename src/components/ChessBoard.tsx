@@ -22,7 +22,10 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
 
   // Function to handle clicking on a piece
   const handlePieceClick = (piece: ChessPieceData) => {
-    console.log('clicking');
+    // check if it's the player's turn
+    if (gameState?.nextMove !== playerColor) {
+      return false;
+    }
     // Only allow selecting pieces of the player's color
     const strategy = strategies.find(s => s.type === piece.type)!;
     if (piece.color === playerColor) {
@@ -65,6 +68,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
     const isSelected = selectedPiece === piece;
     return (
       <div
+        key={piece.id}
         className={`chess-piece ${piece.color} ${piece.type} ${isSelected ? 'selected' : ''}`}
         onClick={() => {
           const processed = handlePieceClick(piece);
