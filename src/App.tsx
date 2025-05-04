@@ -1,27 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { useSocket } from './hooks/useSocket';
 import ChessBoard from './components/ChessBoard';
 import GameControls from './components/GameControls';
-import { GameStateMessageData } from './hooks/useSocket';
 import { ChessPiece, Position } from './chess/ChessPiece';
 
 function App() {
   const { connected, updateGameState, gameStates, joinGame, currentGameId, createNewGame, error } =
     useSocket();
 
-  const [currentGame, setCurrentGame] = useState<GameStateMessageData>();
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
+
+  const latestGame = useMemo(() => gameStates[gameStates.length - 1], [gameStates]);
 
   // Update current game when game states change
   useEffect(() => {
     if (gameStates.length > 0 && currentGameId) {
       // Get the latest game state for current game
-      const latestGame = [...gameStates].reverse().find(game => game.id === currentGameId);
 
       if (latestGame) {
-        setCurrentGame(latestGame);
-
         // Determine player color based on socket ID
         // This is a simplified approach - in a real app you would manage this better
         if (latestGame.players.white === 'socket.id') {
@@ -31,14 +28,12 @@ function App() {
         }
       }
     }
-  }, [gameStates, currentGameId]);
+  }, [gameStates, currentGameId, latestGame]);
 
   // Handle piece movement
   const handleMove = (from: Position, to: Position) => {
-    if (!currentGame) return;
-
     // Create a deep copy of the current game state
-    const updatedGameState = JSON.parse(JSON.stringify(currentGame));
+    const updatedGameState = JSON.parse(JSON.stringify(latestGame));
 
     // Find the piece to move
     const pieceIndex = updatedGameState.gameState.board.findIndex(
@@ -74,7 +69,7 @@ function App() {
         {error && <div className="error-message">{error}</div>}
 
         <div className="game-container">
-          <ChessBoard gameState={currentGame} onMove={handleMove} playerColor={playerColor} />
+          <ChessBoard gameState={latestGame} onMove={handleMove} playerColor={playerColor} />
         </div>
       </main>
     </div>

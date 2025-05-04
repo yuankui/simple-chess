@@ -20,6 +20,7 @@ export const createPawnPiece = (color: 'black' | 'white', position: Position): C
     color,
     position,
     type: 'pawn',
+    image: color === 'white' ? '/chess/pawn-white.svg' : '/chess/pawn-black.svg',
     nextMoves(game: GameState): Position[] {
       // 1 step forward, left, or right.
       return delta(color)

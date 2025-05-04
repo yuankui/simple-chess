@@ -13,6 +13,7 @@ export interface ChessPiece {
   color: 'white' | 'black';
   position: Position;
   type: 'pawn'; // TODO: add other types like 'rook', 'knight', etc.
+  image: string; // Image URL for the piece
   nextMoves(game: GameState): Position[]; // Possible next moves
   nextKills(game: GameState): Position[]; // Possible next kills
 }
