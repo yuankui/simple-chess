@@ -3,11 +3,12 @@ import './App.css';
 import { useSocket } from './hooks/useSocket';
 import ChessBoard from './components/ChessBoard';
 import GameControls from './components/GameControls';
-import { ChessPiece, Position } from './chess/ChessPiece';
+import { ChessPieceData, Position } from './chess/ChessPiece';
 import { GameStateMessageData } from './messages/message-types.ts';
 
 function App() {
-  const { connected, updateGameState, gameStates, joinGame, createNewGame, error } = useSocket();
+  const { connected, updateGameState, gameStates, joinGame, createNewGame, error, playerId } =
+    useSocket();
 
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
 
@@ -21,13 +22,13 @@ function App() {
     if (latestGame) {
       // Determine player color based on socket ID
       // This is a simplified approach - in a real app you would manage this better
-      if (latestGame.players.white === 'socket.id') {
+      if (latestGame.players.white === playerId) {
         setPlayerColor('white');
-      } else if (latestGame.players.black === 'socket.id') {
+      } else if (latestGame.players.black === playerId) {
         setPlayerColor('black');
       }
     }
-  }, [gameStates, latestGame]);
+  }, [gameStates, latestGame, playerId]);
 
   // Handle piece movement
   const handleMove = (from: Position, to: Position) => {
@@ -36,7 +37,7 @@ function App() {
 
     // Find the piece to move
     const pieceIndex = updatedGameState.gameState.board.findIndex(
-      (p: ChessPiece) => p.position.x === from.x && p.position.y === from.y
+      (p: ChessPieceData) => p.position.x === from.x && p.position.y === from.y
     );
 
     if (pieceIndex >= 0) {
@@ -51,6 +52,12 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (!connected) {
+      // Handle disconnection logic here
+      console.log('Disconnected from server');
+    }
+  }, [connected]);
   return (
     <div className="app">
       <header className="app-header">

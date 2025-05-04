@@ -79,6 +79,7 @@ export function useSocket() {
   }, []);
 
   return {
+    playerId: socketRef.current?.id,
     connected,
     gameStates,
     error,

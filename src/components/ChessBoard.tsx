@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ChessPiece, Position } from '../chess/ChessPiece';
+import { ChessPieceData, Position } from '../chess/ChessPiece';
 import { GameStateMessageData } from '../messages/message-types.ts';
+import { strategies } from '../chess/strategies.ts';
 
 interface ChessBoardProps {
   gameState?: GameStateMessageData;
@@ -9,7 +10,7 @@ interface ChessBoardProps {
 }
 
 export default function ChessBoard({ gameState, onMove, playerColor = 'white' }: ChessBoardProps) {
-  const [selectedPiece, setSelectedPiece] = useState<ChessPiece | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<ChessPieceData | null>(null);
   const [possibleMoves, setPossibleMoves] = useState<Position[]>([]);
 
   console.log({ gameState });
@@ -20,14 +21,15 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
   }, [gameState]);
 
   // Function to handle clicking on a piece
-  const handlePieceClick = (piece: ChessPiece) => {
+  const handlePieceClick = (piece: ChessPieceData) => {
     // Only allow selecting pieces of the player's color
+    const strategy = strategies.find(s => s.type === piece.type)!;
     if (piece.color === playerColor) {
       setSelectedPiece(piece);
       // Calculate possible moves for this piece
       if (gameState?.gameState) {
-        const moves = piece.nextMoves(gameState.gameState);
-        const kills = piece.nextKills(gameState.gameState);
+        const moves = strategy.nextMoves(piece, gameState.gameState);
+        const kills = strategy.nextKills(piece, gameState.gameState);
         setPossibleMoves([...moves, ...kills]);
       }
     }
@@ -47,7 +49,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
   };
 
   // Function to render a chess piece
-  const renderPiece = (piece: ChessPiece) => {
+  const renderPiece = (piece: ChessPieceData) => {
     console.log({ piece });
     const isSelected = selectedPiece === piece;
     return (
@@ -92,6 +94,16 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
     return board;
   };
 
+  const whoseTurn = () => {
+    if (playerColor === gameState?.nextMove) {
+      return 'Your turn';
+    }
+    if (gameState?.nextMove === 'white') {
+      return "White's turn";
+    } else {
+      return "Black's turn";
+    }
+  };
   return (
     <div className="chess-board-container">
       <div className="chess-board">{renderBoard()}</div>
@@ -103,7 +115,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
           </div>
         ) : (
           <div className="turn-indicator">
-            {gameState?.status === 'playing' ? `${gameState.nextMove}'s turn` : 'Waiting to start'}
+            {gameState?.status === 'playing' ? whoseTurn() : 'Waiting to start'}
           </div>
         )}
       </div>

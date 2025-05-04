@@ -79,7 +79,7 @@ io.on('connection', (socket: Socket) => {
       // initialize game state
       game.gameState = {
         gameOver: false,
-        board: [createPawnPiece('black', { x: 0, y: 6 }), createPawnPiece('black', { x: 1, y: 6 })],
+        board: [createPawnPiece('black', { x: 0, y: 6 }), createPawnPiece('white', { x: 1, y: 6 })],
         winner: null,
       };
 

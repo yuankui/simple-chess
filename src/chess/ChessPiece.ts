@@ -4,16 +4,20 @@ export interface Position {
 }
 
 export interface GameState {
-  board: ChessPiece[]; // Array of chess pieces on the board
+  board: ChessPieceData[]; // Array of chess pieces on the board
   gameOver: boolean; // Game over status
   winner: 'white' | 'black' | null; // Winner of the game
 }
 
-export interface ChessPiece {
+export interface ChessPieceStrategy {
+  type: ChessPieceData['type'];
+  nextMoves(piece: ChessPieceData, game: GameState): Position[]; // Possible next moves
+  nextKills(piece: ChessPieceData, game: GameState): Position[]; // Possible next kills
+}
+
+export interface ChessPieceData {
   color: 'white' | 'black';
   position: Position;
   type: 'pawn'; // TODO: add other types like 'rook', 'knight', etc.
   image: string; // Image URL for the piece
-  nextMoves(game: GameState): Position[]; // Possible next moves
-  nextKills(game: GameState): Position[]; // Possible next kills
 }
