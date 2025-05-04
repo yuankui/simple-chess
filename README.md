@@ -97,10 +97,5 @@ simple-chess/
 └── tsconfig.server.json # Server TypeScript configuration
 ```
 
-
-## NOTE
-
-- This demo is not finished yet. I have some issue displaying the chess pieces on the board. I will fix it later.
-
 ## Limitations
 - The rule is not correct for now.
