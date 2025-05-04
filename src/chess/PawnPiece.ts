@@ -6,12 +6,12 @@ const delta = (color: 'black' | 'white'): Position[] => [
     y: color === 'white' ? -1 : 1, // Move forward
   },
   {
-    x: -1,
-    y: color === 'white' ? -1 : 1, // Move left
+    x: color === 'white' ? -1 : 1, // Move left,
+    y: 0,
   },
   {
-    x: 1,
-    y: color === 'white' ? -1 : 1, // Move right
+    x: color === 'white' ? 1 : -1, // Move left
+    y: 0,
   },
 ];
 

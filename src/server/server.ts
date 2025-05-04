@@ -7,8 +7,8 @@ import {
   createSendMesssage,
   GameStateMessageData,
 } from '../messages/message-types.ts';
-import { createPawnPiece } from '../chess/PawnPiece.ts';
-import { initializeGame } from './initializeGame.ts';
+import { createPendingGame } from './create-pending-game.ts';
+import { createInitialBoard } from './create-initial-board.ts';
 
 const app = express();
 
@@ -42,7 +42,7 @@ io.on('connection', (socket: Socket) => {
       socket.join(gameId);
 
       // Store game state (in a real app, you might use a database)
-      const newGame = initializeGame(gameId, socket.id);
+      const newGame = createPendingGame(gameId, socket.id);
 
       // Add game to active games (in a real app, use a database)
       activeGames.set(gameId, newGame);
@@ -79,7 +79,7 @@ io.on('connection', (socket: Socket) => {
       // initialize game state
       game.gameState = {
         gameOver: false,
-        board: [createPawnPiece('black', { x: 0, y: 6 }), createPawnPiece('white', { x: 1, y: 6 })],
+        board: createInitialBoard(),
         winner: null,
       };
 

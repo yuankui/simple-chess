@@ -1,6 +1,6 @@
 import { GameStateMessageData } from '../messages/message-types.ts';
 
-export const initializeGame = (gameId: string, playerId: string) => {
+export const createPendingGame = (gameId: string, playerId: string) => {
   const newGame: GameStateMessageData = {
     id: gameId,
     players: {
