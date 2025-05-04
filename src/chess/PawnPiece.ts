@@ -1,17 +1,17 @@
 import { ChessPieceData, ChessPieceStrategy, GameState, Position } from './ChessPiece.ts';
 import { v4 } from 'uuid';
 
-const delta = (color: 'black' | 'white'): Position[] => [
+const delta = (): Position[] => [
   {
     x: 0,
-    y: color === 'white' ? -1 : 1, // Move forward
+    y: -1,
   },
   {
-    x: color === 'white' ? -1 : 1, // Move left,
+    x: -1, // Move left
     y: 0,
   },
   {
-    x: color === 'white' ? 1 : -1, // Move left
+    x: 1, // Move right
     y: 0,
   },
 ];
@@ -20,7 +20,7 @@ export const PawnChessPieceStrategy: ChessPieceStrategy = {
   type: 'pawn',
   nextMoves(piece: ChessPieceData, game: GameState): Position[] {
     // 1 step forward, left, or right.
-    return delta(piece.color)
+    return delta()
       .map(d => ({
         x: piece.position.x + d.x,
         y: piece.position.y + d.y,
@@ -40,7 +40,7 @@ export const PawnChessPieceStrategy: ChessPieceStrategy = {
   nextKills(piece: ChessPieceData, game: GameState): Position[] {
     // 1 step forward, left, or right.
 
-    return delta(piece.color)
+    return delta()
       .map(d => ({
         x: piece.position.x + d.x,
         y: piece.position.y + d.y,

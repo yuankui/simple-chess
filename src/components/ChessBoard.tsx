@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChessPieceData, Position } from '../chess/ChessPiece';
 import { GameStateMessageData } from '../messages/message-types.ts';
 import { strategies } from '../chess/strategies.ts';
@@ -22,6 +22,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
 
   // Function to handle clicking on a piece
   const handlePieceClick = (piece: ChessPieceData) => {
+    console.log('clicking');
     // Only allow selecting pieces of the player's color
     const strategy = strategies.find(s => s.type === piece.type)!;
     if (piece.color === playerColor) {
@@ -32,15 +33,25 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
         const kills = strategy.nextKills(piece, gameState.gameState);
         setPossibleMoves([...moves, ...kills]);
       }
+      return true;
     }
+    return true;
   };
 
+  const positionRotate = (position: Position) => {
+    const isFlipped = playerColor === 'black';
+    return {
+      x: isFlipped ? 7 - position.x : position.x,
+      y: isFlipped ? 7 - position.y : position.y,
+    };
+  };
   // Function to handle clicking on a cell to move
   const handleCellClick = (x: number, y: number) => {
+    console.log('clicking cell');
     if (selectedPiece && possibleMoves.some(move => move.x === x && move.y === y)) {
       // Valid move, notify parent component
       if (onMove) {
-        onMove(selectedPiece.position, { x, y });
+        onMove(positionRotate(selectedPiece.position), positionRotate({ x, y }));
       }
       // Reset selection
       setSelectedPiece(null);
@@ -55,20 +66,52 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
     return (
       <div
         className={`chess-piece ${piece.color} ${piece.type} ${isSelected ? 'selected' : ''}`}
-        onClick={() => handlePieceClick(piece)}
+        onClick={() => {
+          const processed = handlePieceClick(piece);
+          if (processed) {
+            handleCellClick(piece.position.x, piece.position.y);
+          }
+        }}
+        style={{
+          left: (piece.position.x * boardWidth) / 8,
+          top: (piece.position.y * boardWidth) / 8,
+        }}
       >
-        <img src={piece.image} width={40} height={40} alt={piece.type} />
+        <img src={piece.image} width={boardWidth / 8} height={boardWidth / 8} alt={piece.type} />
       </div>
     );
   };
+
+  const rotatedPieces = useMemo(() => {
+    return gameState?.gameState.board.map(piece => {
+      const isFlipped = playerColor === 'black';
+      const actualX = isFlipped ? 7 - piece.position.x : piece.position.x;
+      const actualY = isFlipped ? 7 - piece.position.y : piece.position.y;
+
+      return {
+        ...piece,
+        position: { x: actualX, y: actualY },
+      };
+    });
+  }, [gameState?.gameState.board, playerColor]);
+
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [boardWidth, setBoardWidth] = useState(0);
+  useEffect(() => {
+    if (!boardRef.current) return;
+    const resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width } = entry.contentRect;
+        setBoardWidth(width);
+      }
+    });
+
+    resizeObserver.observe(boardRef.current);
+  }, [boardRef]);
   // Create an 8x8 board
   const renderBoard = () => {
     const board = [];
-    const gameStateBoard = gameState?.gameState?.board || [];
-
-    // Determine if we should flip the board (when player is black)
     const isFlipped = playerColor === 'black';
-
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
         // Calculate actual coordinates based on board orientation
@@ -82,20 +125,9 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
             (isFlipped ? 7 - move.y : move.y) === actualY
         );
 
-        // Find if there's a piece at this position (using actual board coordinates)
-        const piece = gameStateBoard.find(
-          p =>
-            (isFlipped ? 7 - p.position.x : p.position.x) === actualX &&
-            (isFlipped ? 7 - p.position.y : p.position.y) === actualY
-        );
-
-        // For coordinate display, use logical board coordinates
-        const displayX = isFlipped ? 7 - actualX : actualX;
-        const displayY = isFlipped ? 7 - actualY : actualY;
-
         board.push(
           <div
-            key={piece?.id}
+            key={`${x}-${y}`}
             className={`
               chess-square 
               ${isBlackSquare ? 'black' : 'white'} 
@@ -104,10 +136,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
             onClick={() =>
               handleCellClick(isFlipped ? 7 - actualX : actualX, isFlipped ? 7 - actualY : actualY)
             }
-          >
-            {piece && renderPiece(piece)}
-            <div className="coordinates">{`${String.fromCharCode(97 + displayX)}${8 - displayY}`}</div>
-          </div>
+          ></div>
         );
       }
     }
@@ -127,8 +156,11 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
   };
   return (
     <div className="chess-board-container">
-      <div className={`chess-board ${playerColor === 'black' ? 'rotated' : ''}`}>
+      <div className={`chess-board`} ref={boardRef}>
         {renderBoard()}
+        {rotatedPieces?.map(piece => {
+          return renderPiece(piece);
+        })}
       </div>
       <div className="board-status">
         <div className="player-color-indicator">

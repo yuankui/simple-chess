@@ -137,6 +137,7 @@
 }
 
 .chess-board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
@@ -169,6 +170,7 @@
 }
 
 .chess-piece {
+  position: absolute;
   font-size: 2.5rem;
   cursor: pointer;
   user-select: none;
@@ -177,7 +179,9 @@
 
 .chess-piece.white {
   color: #fff;
-  text-shadow: 0 0 1px #000, 0 0 2px #000;
+  text-shadow:
+    0 0 1px #000,
+    0 0 2px #000;
 }
 
 .chess-piece.black {
@@ -261,7 +265,7 @@
   .chess-piece {
     font-size: 2rem;
   }
-  
+
   .join-game {
     flex-direction: column;
   }
@@ -271,7 +275,7 @@
   .chess-piece {
     font-size: 1.5rem;
   }
-  
+
   .coordinates {
     display: none;
   }
