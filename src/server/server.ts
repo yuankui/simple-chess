@@ -112,7 +112,9 @@ io.on('connection', (socket: Socket) => {
           })
         );
       } else {
-        socket.emit('error', { message: `Game with ID ${game.id} not found` });
+        socket.emit(
+          ...createSendMesssage('error', { message: `Game with ID ${game.id} not found` })
+        );
       }
 
       console.log(`Game state updated for game: ${game.id}`);
@@ -138,9 +140,7 @@ io.on('connection', (socket: Socket) => {
           console.log(`Game removed: ${gameId}`);
         } else {
           // Notify remaining players
-          io.to(gameId).emit('playerLeft', {
-            type: 'gameState',
-            gameId,
+          io.to(gameId).emit('error', {
             message: 'Your opponent has disconnected',
           });
           console.log(`Player left game: ${gameId}`);

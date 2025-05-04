@@ -72,12 +72,15 @@ export function useSocket() {
 
   const updateGameState = useCallback((gameState: GameStateMessageData) => {
     if (socketRef.current && gameState.id) {
-      socketRef.current.emit('gameState', gameState);
+      socketRef.current.emit(...createSendMesssage('gameState', gameState));
     } else {
       setError('Cannot update game state: no game ID provided');
     }
   }, []);
 
+  useEffect(() => {
+    setError(null);
+  }, [gameStates.length]);
   return {
     playerId: socketRef.current?.id,
     connected,

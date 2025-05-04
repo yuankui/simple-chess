@@ -64,7 +64,6 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
 
   // Function to render a chess piece
   const renderPiece = (piece: ChessPieceData) => {
-    console.log({ piece });
     const isSelected = selectedPiece === piece;
     return (
       <div
