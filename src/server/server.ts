@@ -1,7 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
-import { randomUUID } from 'node:crypto';
 import {
   createReceiveMessage,
   createSendMesssage,
@@ -9,12 +8,13 @@ import {
 } from '../messages/message-types.ts';
 import { createPendingGame } from './create-pending-game.ts';
 import { createInitialBoard } from './create-initial-board.ts';
+import { v4 } from 'uuid';
 
 const app = express();
 
 // Helper function to generate a unique game ID
 function generateUniqueId(): string {
-  return randomUUID();
+  return v4();
 }
 
 // Store active games - in a real app, use a database

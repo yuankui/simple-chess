@@ -65,7 +65,7 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
   const renderBoard = () => {
     const board = [];
     const gameStateBoard = gameState?.gameState?.board || [];
-    
+
     // Determine if we should flip the board (when player is black)
     const isFlipped = playerColor === 'black';
 
@@ -74,17 +74,19 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
         // Calculate actual coordinates based on board orientation
         const actualY = isFlipped ? 7 - y : y;
         const actualX = isFlipped ? 7 - x : x;
-        
+
         const isBlackSquare = (actualX + actualY) % 2 === 1;
-        const isPossibleMove = possibleMoves.some(move => 
-          (isFlipped ? 7 - move.x : move.x) === actualX && 
-          (isFlipped ? 7 - move.y : move.y) === actualY
+        const isPossibleMove = possibleMoves.some(
+          move =>
+            (isFlipped ? 7 - move.x : move.x) === actualX &&
+            (isFlipped ? 7 - move.y : move.y) === actualY
         );
 
         // Find if there's a piece at this position (using actual board coordinates)
-        const piece = gameStateBoard.find(p => 
-          (isFlipped ? 7 - p.position.x : p.position.x) === actualX && 
-          (isFlipped ? 7 - p.position.y : p.position.y) === actualY
+        const piece = gameStateBoard.find(
+          p =>
+            (isFlipped ? 7 - p.position.x : p.position.x) === actualX &&
+            (isFlipped ? 7 - p.position.y : p.position.y) === actualY
         );
 
         // For coordinate display, use logical board coordinates
@@ -93,16 +95,15 @@ export default function ChessBoard({ gameState, onMove, playerColor = 'white' }:
 
         board.push(
           <div
-            key={`${actualX}-${actualY}`}
+            key={piece?.id}
             className={`
               chess-square 
               ${isBlackSquare ? 'black' : 'white'} 
               ${isPossibleMove ? 'possible-move' : ''}
             `}
-            onClick={() => handleCellClick(
-              isFlipped ? 7 - actualX : actualX,
-              isFlipped ? 7 - actualY : actualY
-            )}
+            onClick={() =>
+              handleCellClick(isFlipped ? 7 - actualX : actualX, isFlipped ? 7 - actualY : actualY)
+            }
           >
             {piece && renderPiece(piece)}
             <div className="coordinates">{`${String.fromCharCode(97 + displayX)}${8 - displayY}`}</div>

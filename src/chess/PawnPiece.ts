@@ -1,4 +1,5 @@
 import { ChessPieceData, ChessPieceStrategy, GameState, Position } from './ChessPiece.ts';
+import { v4 } from 'uuid';
 
 const delta = (color: 'black' | 'white'): Position[] => [
   {
@@ -59,6 +60,7 @@ export const PawnChessPieceStrategy: ChessPieceStrategy = {
 };
 export const createPawnPiece = (color: 'black' | 'white', position: Position): ChessPieceData => {
   return {
+    id: v4(),
     color,
     position,
     type: 'pawn',
