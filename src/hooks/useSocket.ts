@@ -70,7 +70,7 @@ export function useSocket() {
     }
   }, []);
 
-  const updateGameState = useCallback((gameState: GameStateMessageData & { gameId: string }) => {
+  const updateGameState = useCallback((gameState: GameStateMessageData) => {
     if (socketRef.current && gameState.id) {
       socketRef.current.emit('gameState', gameState);
     } else {

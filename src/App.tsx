@@ -33,23 +33,44 @@ function App() {
   // Handle piece movement
   const handleMove = (from: Position, to: Position) => {
     // Create a deep copy of the current game state
-    const updatedGameState = JSON.parse(JSON.stringify(latestGame));
+    const existingPieces = latestGame.gameState.board;
 
-    // Find the piece to move
-    const pieceIndex = updatedGameState.gameState.board.findIndex(
+    const fromPiece = existingPieces.find(
       (p: ChessPieceData) => p.position.x === from.x && p.position.y === from.y
     );
-
-    if (pieceIndex >= 0) {
-      // Update piece position
-      updatedGameState.gameState.board[pieceIndex].position = to;
-
-      // Toggle last move
-      updatedGameState.lastMove = updatedGameState.lastMove === 'white' ? 'black' : 'white';
-
-      // Send updated game state to server
-      updateGameState(updatedGameState);
+    if (!fromPiece) {
+      console.error('No piece found at the source position');
+      return;
     }
+
+    // if piece exists, kill the piece at the target position, else just move
+    const newPieces = existingPieces
+      .map(p => {
+        // exists
+        if (p.position.x === to.x && p.position.y === to.y) {
+          return null;
+        }
+        // move
+        if (p.position.x === from.x && p.position.y === from.y) {
+          return {
+            ...p,
+            position: to,
+          };
+        }
+        return p;
+      })
+      .filter(p => p != null);
+
+    // Update the game state
+    const newGameState: GameStateMessageData = {
+      ...latestGame,
+      nextMove: latestGame.nextMove === 'white' ? 'black' : 'white',
+      gameState: {
+        ...latestGame.gameState,
+        board: newPieces,
+      },
+    };
+    updateGameState(newGameState);
   };
 
   useEffect(() => {
